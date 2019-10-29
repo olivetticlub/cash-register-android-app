@@ -36,7 +36,8 @@ class ProductListFragment : Fragment() {
             Product("Birra", 450, R.mipmap.birra),
             Product("Vino", 450, R.mipmap.vino),
             Product("Tiramisù", 300, R.mipmap.tiramisu),
-            Product("Panna cotta", 300, R.mipmap.panna_cotta)
+            Product("Panna cotta", 300, R.mipmap.panna_cotta),
+            Product("Mancia", 1800, R.mipmap.mancia)
         )
 
         productGridView.adapter = ProductAdapter(productList)
