@@ -11,6 +11,8 @@ import com.olivetticlub.cashregisterapp.printer.thermal.textparser.PrinterTextPa
 import com.olivetticlub.cashregisterapp.printer.thermal.textparser.PrinterTextParserLine;
 import com.olivetticlub.cashregisterapp.printer.thermal.textparser.PrinterTextParserString;
 
+import java.io.IOException;
+
 
 public class Printer {
 
@@ -122,6 +124,7 @@ public class Printer {
      * @param text Formatted text to be printed.
      * @return Fluent interface
      */
+
     public Printer printFormattedText(String text) {
         if (this.bluetoothPrinter == null || this.nbrCharactersPerLine == 0) {
             return this;
@@ -155,11 +158,20 @@ public class Printer {
             this.bluetoothPrinter.newLine();
         }
 
-        this.bluetoothPrinter
-                .newLine()
-                .newLine()
-                .newLine()
-                .newLine();
+        return this;
+    }
+
+    public Printer printQrCode(String data) {
+        if (this.bluetoothPrinter == null || this.nbrCharactersPerLine == 0) {
+            return this;
+        }
+
+        try {
+            this.bluetoothPrinter.printQrCode(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         return this;
     }
