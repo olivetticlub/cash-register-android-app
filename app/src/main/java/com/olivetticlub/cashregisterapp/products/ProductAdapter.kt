@@ -26,7 +26,7 @@ class ProductAdapter(private val productList: MutableList<Product>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.view.nameTextView.text = productList[position].name
-        holder.view.priceTextView.text = productList[position].price
+        holder.view.priceTextView.text = productList[position].priceDescription
         holder.view.imageView.setImageResource(productList[position].image)
     }
 
