@@ -44,11 +44,15 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
 
         totalAmountTextView.text = formattedTotalAmount()
 
+        trashButton.setOnClickListener {
+            productList.clear()
+            updateTransaction()
+        }
+
         printReceiptButton.setOnClickListener {
             if (productList.isNotEmpty()) {
                 printReceipt()
             }
-
         }
 
     }
@@ -101,7 +105,7 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
         } else {
             0.0f
         }
-        
+
         totalAmountTextView.text = formattedTotalAmount()
     }
 
