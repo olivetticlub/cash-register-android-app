@@ -8,7 +8,8 @@
         android:id="@+id/productRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:scrollbars="vertical">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -16,20 +17,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/trashButton"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:padding="32dp"
             android:background="#00000000"
-            android:src="@drawable/ic__ionicons_svg_md_trash"
+            android:padding="32dp"
             android:scaleType="center"
-            >
+            android:src="@drawable/ic__ionicons_svg_md_trash">
 
         </ImageButton>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,12 +56,11 @@
     </LinearLayout>
 
 
-
     <Button
         android:id="@+id/printReceiptButton"
-        android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:text="print receipt"
         android:textSize="22sp">
 

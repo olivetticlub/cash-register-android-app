@@ -98,6 +98,7 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
 
     private fun updateTransaction() {
         productRecyclerView.adapter?.notifyDataSetChanged()
+        productRecyclerView.scrollToPosition(productList.lastIndex)
 
         totalAmount = if (productList.isNotEmpty()) {
             productList.map { (it.price.toFloat() / 100) }
