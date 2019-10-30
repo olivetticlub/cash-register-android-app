@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <fragment
-        android:id="@+id/productsFragmentContainer"
+        android:id="@+id/productsFragment"
         android:name="com.olivetticlub.cashregisterapp.products.ProductListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -16,7 +16,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/transactionFragmentContainer"
+        android:id="@+id/transactionFragment"
         android:name="com.olivetticlub.cashregisterapp.transaction.TransactionFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"

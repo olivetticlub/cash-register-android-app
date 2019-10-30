@@ -4,19 +4,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.olivetticlub.cashregisterapp.ProductSelectionListener
 import com.olivetticlub.cashregisterapp.R
-import kotlinx.android.synthetic.main.product_list_item.view.*
+import com.olivetticlub.cashregisterapp.products.ProductAdapter.LayoutType.GRID
+import com.olivetticlub.cashregisterapp.products.ProductAdapter.LayoutType.LIST
+import kotlinx.android.synthetic.main.product_grid_item.view.*
 
-class ProductAdapter(private val productList: MutableList<Product>) :
+class ProductAdapter(
+    private val productList: MutableList<Product>,
+    private val listener: ProductSelectionListener?,
+    private val layout: LayoutType
+) :
     RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.product_list_item,
+                when (layout) {
+                    GRID -> R.layout.product_grid_item
+                    LIST -> R.layout.product_list_item
+                },
                 parent,
                 false
-            )
+            ),
+            listener
         )
     }
 
@@ -28,8 +39,20 @@ class ProductAdapter(private val productList: MutableList<Product>) :
         holder.view.nameTextView.text = productList[position].name
         holder.view.priceTextView.text = productList[position].priceDescription
         holder.view.imageView.setImageResource(productList[position].image)
+
+        holder.view.setOnClickListener {
+            holder.listener?.productSelected(productList[position])
+        }
     }
 
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(
+        val view: View,
+        val listener: ProductSelectionListener?
+    ) : RecyclerView.ViewHolder(view)
+
+    enum class LayoutType {
+        GRID,
+        LIST
+    }
 
 }

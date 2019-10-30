@@ -1,15 +1,28 @@
 package com.olivetticlub.cashregisterapp.products
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.olivetticlub.cashregisterapp.ProductSelectionListener
 import com.olivetticlub.cashregisterapp.R
+import com.olivetticlub.cashregisterapp.products.ProductAdapter.LayoutType.GRID
 import kotlinx.android.synthetic.main.fragment_product_list.*
 
 class ProductListFragment : Fragment() {
+
+    private var listener: ProductSelectionListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        if (context is ProductSelectionListener) {
+            listener = context
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +53,8 @@ class ProductListFragment : Fragment() {
             Product("Mancia", 1800, R.mipmap.mancia)
         )
 
-        productGridView.adapter = ProductAdapter(productList)
+        productGridView.adapter =
+            ProductAdapter(productList, listener, GRID)
         productGridView.layoutManager = GridLayoutManager(context!!, 4)
     }
 
