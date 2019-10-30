@@ -17,18 +17,35 @@ class ProductAdapter(
 ) :
     RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
+    companion object {
+        private const val LAST_ELEMENT_OF_LIST = 1001
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 when (layout) {
                     GRID -> R.layout.product_grid_item
-                    LIST -> R.layout.product_list_item
+                    LIST -> when (viewType) {
+                        LAST_ELEMENT_OF_LIST -> R.layout.product_list_last_item
+                        else -> R.layout.product_list_item
+                    }
                 },
                 parent,
                 false
             ),
             listener
         )
+    }
+
+    override fun getItemViewType(position: Int): Int {
+
+        if (position == productList.size - 1) {
+            return LAST_ELEMENT_OF_LIST
+        }
+
+        return -1
+
     }
 
     override fun getItemCount(): Int {
