@@ -58,7 +58,7 @@ class ProductAdapter(
         holder.view.imageView?.setImageResource(productList[position].image)
 
         holder.view.setOnClickListener {
-            holder.listener?.productSelected(productList[position])
+            holder.listener?.onProductSelected(productList[position])
         }
     }
 

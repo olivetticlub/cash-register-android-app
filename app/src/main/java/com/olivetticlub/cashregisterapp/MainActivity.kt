@@ -13,7 +13,7 @@ class MainActivity : FragmentActivity(), ProductSelectionListener {
         setContentView(R.layout.activity_main)
     }
 
-    override fun productSelected(product: Product) {
+    override fun onProductSelected(product: Product) {
         (transactionFragment as TransactionFragment).productSelected(product)
     }
 
