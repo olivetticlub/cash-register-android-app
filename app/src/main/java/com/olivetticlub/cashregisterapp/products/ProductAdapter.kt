@@ -55,7 +55,7 @@ class ProductAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.view.nameTextView.text = productList[position].name
         holder.view.priceTextView.text = productList[position].priceDescription
-        holder.view.imageView.setImageResource(productList[position].image)
+        holder.view.imageView?.setImageResource(productList[position].image)
 
         holder.view.setOnClickListener {
             holder.listener?.productSelected(productList[position])
