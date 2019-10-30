@@ -18,11 +18,12 @@ class TransactionFragment : Fragment() {
 
     private lateinit var printer: Printer
     private var productList = mutableListOf<Product>()
+    private var totalAmount = 0.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        printer = Printer(BluetoothPrinters().list.first(), 203, 58.0f, 42)
+        printer = Printer(BluetoothPrinters().list.first(), 203, 58.0f, 32)
     }
 
     override fun onCreateView(
@@ -40,8 +41,36 @@ class TransactionFragment : Fragment() {
         productRecyclerView.adapter = ProductAdapter(productList, null, LIST)
         productRecyclerView.layoutManager = LinearLayoutManager(context!!)
 
+        totalAmountTextView.text = formattedTotalAmount()
+
+
         printReceiptButton.setOnClickListener {
-            printer.printFormattedText("[L]1 x Cazzettino\n\n\n").printQrCode("Cazzettino")
+            if (productList.isNotEmpty()) {
+
+                printer.printFormattedText(
+                    "[L]\n" +
+                            "[C]<font size='tall'>RISTORANTE DA BONTE</font>\n" +
+                            "[L]\n" +
+                            "[R]EURO\n" +
+                            productList.map {
+                                "[L]${it.name} [R]${it.priceDescriptionWithoutEur}\n"
+                            }.joinToString("") +
+                            "[C]--------------------------------\n" +
+                            "[L]<font size='tall'>TOTALE</font>[R]${formattedTotalAmount()}\n" +
+                            "[L]\n" +
+                            "[C]================================\n" +
+                            "[L]\n"
+                ).printQrCode("Cazzettino")
+                    .printFormattedText(
+                        "[L]\n" +
+                                "[C]Sconto del 1% sul Cazzettino\n" +
+                                "[C]<b>Cazzettino Shop</b>\n" +
+                                "[C] Via dalle palle 11\n" +
+                                "[C]Trento 38122 Italia\n"
+                    )
+                    .printFormattedText("[L]\n[L]\n[L]\n")
+            }
+
         }
 
     }
@@ -49,6 +78,13 @@ class TransactionFragment : Fragment() {
     fun productSelected(product: Product) {
         productList.add(product)
         productRecyclerView.adapter?.notifyDataSetChanged()
+
+        totalAmount =
+            productList.map { (it.price.toFloat() / 100) }
+                .reduce { sum, price -> sum + price }
+        totalAmountTextView.text = formattedTotalAmount()
     }
+
+    private fun formattedTotalAmount() = "%.2f".format(totalAmount)
 
 }
