@@ -45,8 +45,7 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
         totalAmountTextView.text = formattedTotalAmount()
 
         trashButton.setOnClickListener {
-            productList.clear()
-            updateTransaction()
+            resetTransaction()
         }
 
         printReceiptButton.setOnClickListener {
@@ -55,6 +54,11 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
             }
         }
 
+    }
+
+    private fun resetTransaction() {
+        productList.clear()
+        updateTransaction()
     }
 
     override fun onProductSelected(product: Product) {
@@ -89,6 +93,8 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
                         "[C]Trento 38122 Italia\n"
             )
             .printFormattedText("[L]\n[L]\n[L]\n")
+
+        resetTransaction()
     }
 
     fun productSelected(product: Product) {
