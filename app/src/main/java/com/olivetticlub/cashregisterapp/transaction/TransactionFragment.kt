@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.olivetticlub.cashregisterapp.ProductSelectionListener
@@ -18,15 +19,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class TransactionFragment : Fragment(), ProductSelectionListener {
-    private lateinit var printer: Printer
+    private var printer: Printer? = null
     private var productList = mutableListOf<Product>()
     private var totalAmount = 0.0f
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        printer = Printer(BluetoothPrinters().list.first(), 203, 58.0f, 32)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +49,10 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
             }
         }
 
+        printerStatusImageView.setOnClickListener {
+            checkConnection()
+        }
+
     }
 
     private fun resetTransaction() {
@@ -66,35 +65,72 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
         updateTransaction()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        checkConnection()
+    }
+
+
+    private fun checkConnection() {
+        if (printer == null) {
+            BluetoothPrinters().list?.let { list ->
+                list.firstOrNull {
+                    it.device.address == OUR_POOR_PRINTER_ADDRESS
+                }?.let {
+                    printer = Printer(it, 203, 58.0f, 32)
+                }
+            }
+
+        }
+
+        if (printer != null && printer?.isConnected!!) {
+            printerStatusImageView.setImageResource(R.drawable.ic_connected_printer)
+            return
+        }
+
+        printerStatusImageView.setImageResource(R.drawable.ic_disconnected_printer)
+    }
+
     private fun printReceipt() {
-        val date = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
+        if (printer != null && printer?.isConnected!!) {
 
-        printer.printFormattedText(
-            "[L]\n" +
-                    "[C]<font size='tall'>RISTORANTE DA BONTE</font>\n" +
-                    "[L]\n" +
-                    "[R]EURO\n" +
-                    productList.map {
-                        "[L]${it.name} [R]${it.priceDescriptionWithoutEur}\n"
-                    }.joinToString("") +
-                    "[C]--------------------------------\n" +
-                    "[L]<font size='tall'>TOTALE</font>[R]${formattedTotalAmount()}\n" +
-                    "[L]\n" +
-                    "[C]${date}\n" +
-                    "[L]\n" +
-                    "[C]================================\n" +
-                    "[L]\n"
-        ).printQrCode("Cazzettino")
-            .printFormattedText(
+            val date = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
+
+            printer!!.printFormattedText(
                 "[L]\n" +
-                        "[C]Sconto del 1% sul Cazzettino\n" +
-                        "[C]<b>Cazzettino Shop</b>\n" +
-                        "[C] Via dalle palle 11\n" +
-                        "[C]Trento 38122 Italia\n"
-            )
-            .printFormattedText("[L]\n[L]\n[L]\n")
+                        "[C]<font size='tall'>RISTORANTE DA BONTE</font>\n" +
+                        "[L]\n" +
+                        "[R]EURO\n" +
+                        productList.map {
+                            "[L]${it.name} [R]${it.priceDescriptionWithoutEur}\n"
+                        }.joinToString("") +
+                        "[C]--------------------------------\n" +
+                        "[L]<font size='tall'>TOTALE</font>[R]${formattedTotalAmount()}\n" +
+                        "[L]\n" +
+                        "[C]${date}\n" +
+                        "[L]\n" +
+                        "[C]================================\n" +
+                        "[L]\n"
+            ).printQrCode("Cazzettino")
+                .printFormattedText(
+                    "[L]\n" +
+                            "[C]Sconto del 1% sul Cazzettino\n" +
+                            "[C]<b>Cazzettino Shop</b>\n" +
+                            "[C] Via dalle palle 11\n" +
+                            "[C]Trento 38122 Italia\n"
+                )
+                .printFormattedText("[L]\n[L]\n[L]\n")
 
-        resetTransaction()
+            resetTransaction()
+            return
+        }
+
+        showPrinterNotConnectedError()
+    }
+
+    private fun showPrinterNotConnectedError() {
+        Toast.makeText(context!!, "Stampante non connessa", Toast.LENGTH_LONG).show()
     }
 
     fun productSelected(product: Product) {
@@ -117,5 +153,9 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
     }
 
     private fun formattedTotalAmount() = "%.2f".format(totalAmount)
+
+    companion object {
+        private const val OUR_POOR_PRINTER_ADDRESS = "66:12:E9:E9:FD:54"
+    }
 
 }

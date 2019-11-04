@@ -37,9 +37,7 @@ public class Printer {
      * @param nbrCharactersPerLine The maximum number of characters that can be printed on a line.
      */
     public Printer(BluetoothPrinterSocketConnexion printer, int printerDpi, float printingWidthMM, int nbrCharactersPerLine) {
-        if (printer != null && (printer.isConnected() || (!printer.isConnected() && printer.connect()))) {
-            this.bluetoothPrinter = printer;
-        }
+        this.bluetoothPrinter = printer;
         this.printerDpi = printerDpi;
         this.printingWidthMM = printingWidthMM;
         this.nbrCharactersPerLine = nbrCharactersPerLine;
@@ -61,6 +59,13 @@ public class Printer {
             this.bluetoothPrinter = null;
         }
         return this;
+    }
+
+    public Boolean isConnected() {
+        if (!bluetoothPrinter.isConnected()) {
+            bluetoothPrinter.connect();
+        }
+        return this.bluetoothPrinter.isConnected();
     }
 
     /**

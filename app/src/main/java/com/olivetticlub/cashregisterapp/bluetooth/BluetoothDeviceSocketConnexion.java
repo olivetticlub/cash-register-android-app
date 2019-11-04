@@ -34,7 +34,7 @@ public class BluetoothDeviceSocketConnexion {
      * @return true if is connected
      */
     public boolean isConnected() {
-        return (this.bluetoothSocket != null);
+        return (this.bluetoothSocket != null && this.bluetoothSocket.isConnected());
     }
 
     /**
