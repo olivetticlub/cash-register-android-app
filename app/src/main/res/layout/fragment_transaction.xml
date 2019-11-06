@@ -75,7 +75,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:textColor="#ffffff"
         android:text="print receipt"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_circle_green"
+        android:elevation="16dp"
         android:textSize="22sp">
 
 
