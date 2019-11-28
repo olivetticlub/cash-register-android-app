@@ -14,14 +14,14 @@ import com.olivetticlub.cashregisterapp.printer.thermal.bluetooth.BluetoothPrint
 import com.olivetticlub.cashregisterapp.products.Product
 import com.olivetticlub.cashregisterapp.products.ProductAdapter
 import com.olivetticlub.cashregisterapp.products.ProductAdapter.LayoutType.LIST
+import com.olivetticlub.cashregisterapp.services.OlivettiClubService
 import kotlinx.android.synthetic.main.fragment_transaction.*
-import java.text.SimpleDateFormat
-import java.util.*
 
-class TransactionFragment : Fragment(), ProductSelectionListener {
+class TransactionFragment : Fragment(), ProductSelectionListener, TransactionView {
     private var printer: Printer? = null
     private var productList = mutableListOf<Product>()
     private var totalAmount = 0.0f
+    private var presenter: TransactionPresenter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,9 +43,11 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
             resetTransaction()
         }
 
+        initPresenter()
+
         printReceiptButton.setOnClickListener {
             if (productList.isNotEmpty()) {
-                printReceipt()
+                presenter?.printReceiptButtonClicked(productList, totalAmount, printer)
             }
         }
 
@@ -55,14 +57,15 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
 
     }
 
-    private fun resetTransaction() {
-        productList.clear()
-        updateTransaction()
+    private fun initPresenter() {
+        if (presenter == null) {
+            presenter = TransactionPresenter(OlivettiClubService("http://192.168.1.71:5000/"))
+        }
     }
 
-    override fun onProductSelected(product: Product) {
-        productList.remove(product)
-        updateTransaction()
+    override fun onStart() {
+        super.onStart()
+        presenter?.attach(this)
     }
 
     override fun onResume() {
@@ -71,6 +74,24 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
         checkConnection()
     }
 
+    override fun onStop() {
+        super.onStop()
+        presenter?.detach()
+    }
+
+    override fun resetTransaction() {
+        productList.clear()
+        updateTransaction()
+    }
+
+    override fun showPrinterNotConnectedError() {
+        Toast.makeText(context!!, "Stampante non connessa", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onProductSelected(product: Product) {
+        productList.remove(product)
+        updateTransaction()
+    }
 
     private fun checkConnection() {
         if (printer == null) {
@@ -90,47 +111,6 @@ class TransactionFragment : Fragment(), ProductSelectionListener {
         }
 
         printerStatusImageView.setImageResource(R.drawable.ic_disconnected_printer)
-    }
-
-    private fun printReceipt() {
-        if (printer != null && printer?.isConnected!!) {
-
-            val date = SimpleDateFormat("dd/MM/yyyy HH:mm").format(Date())
-
-            printer!!.printFormattedText(
-                "[L]\n" +
-                        "[C]<font size='tall'>RISTORANTE DA BONTE</font>\n" +
-                        "[L]\n" +
-                        "[R]EURO\n" +
-                        productList.map {
-                            "[L]${it.name} [R]${it.priceDescriptionWithoutEur}\n"
-                        }.joinToString("") +
-                        "[C]--------------------------------\n" +
-                        "[L]<font size='tall'>TOTALE</font>[R]${formattedTotalAmount()}\n" +
-                        "[L]\n" +
-                        "[C]${date}\n" +
-                        "[L]\n" +
-                        "[C]================================\n" +
-                        "[L]\n"
-            ).printQrCode("Cazzettino")
-                .printFormattedText(
-                    "[L]\n" +
-                            "[C]Sconto del 1% sul Cazzettino\n" +
-                            "[C]<b>Cazzettino Shop</b>\n" +
-                            "[C] Via dalle palle 11\n" +
-                            "[C]Trento 38122 Italia\n"
-                )
-                .printFormattedText("[L]\n[L]\n[L]\n")
-
-            resetTransaction()
-            return
-        }
-
-        showPrinterNotConnectedError()
-    }
-
-    private fun showPrinterNotConnectedError() {
-        Toast.makeText(context!!, "Stampante non connessa", Toast.LENGTH_LONG).show()
     }
 
     fun productSelected(product: Product) {
