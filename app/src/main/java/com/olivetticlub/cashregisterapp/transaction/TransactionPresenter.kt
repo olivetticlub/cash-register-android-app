@@ -51,6 +51,9 @@ class TransactionPresenter(private val service: CouponGeneration) {
                         "[C]${date}\n" +
                         "[L]\n" +
                         "[C]================================\n" +
+                        "[L]\n"+
+                        "[C]Negozio membro di Olivetti Club:\n" +
+                        "[C]Hai vinto un buono sconto!\n" +
                         "[L]\n"
             )
 
