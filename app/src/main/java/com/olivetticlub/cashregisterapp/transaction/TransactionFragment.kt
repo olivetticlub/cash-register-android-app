@@ -59,7 +59,7 @@ class TransactionFragment : Fragment(), ProductSelectionListener, TransactionVie
 
     private fun initPresenter() {
         if (presenter == null) {
-            presenter = TransactionPresenter(OlivettiClubService("http://192.168.1.71:5000/"))
+            presenter = TransactionPresenter(OlivettiClubService("https://olivetti-backend.herokuapp.com/"))
         }
     }
 
